@@ -1,81 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeMaker Pro - Top-Rated Builder 2025</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header class="header">
-        <div class="logo">ResumeMaker Pro</div>
-        <nav>
-            <a href="#templates">Templates</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#login">Login</a>
-        </nav>
-    </header>
+:root {
+    --primary: #007BFF;
+    --bg-light: #F8F9FA;
+    --border: #DEE2E6;
+    --text: #333333;
+}
 
-    <section class="hero">
-        <h1>Build Your ATS-Friendly Resume in 5 Mins</h1>
-        <p>Inspired by top builders like Kickresume & Zety – Free to start!</p>
-        <button onclick="startBuilder()" class="cta-btn">Start Free</button>
-    </section>
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: #FFFFFF;
+    color: var(--text);
+    line-height: 1.6;
+}
 
-    <div id="app" class="hidden">
-        <main class="builder">
-            <aside class="sidebar">
-                <h3>Step-by-Step Editor (Like Resume Genius)</h3>
-                <div class="template-selector">
-                    <h4>Pick a Template</h4>
-                    <select id="templateSelect" onchange="switchTemplate()">
-                        <option value="professional">Professional (Zety Style)</option>
-                        <option value="modern">Modern (Kickresume Blue)</option>
-                        <option value="creative">Creative (Canva Drag-Drop)</option>
-                    </select>
-                </div>
-                <section class="step">
-                    <h4>Step 1: Personal Info</h4>
-                    <input type="text" id="name" placeholder="Full Name" oninput="updatePreview()">
-                    <input type="text" id="title" placeholder="Job Title" oninput="updatePreview()">
-                    <input type="text" id="email" placeholder="Email" oninput="updatePreview()">
-                    <input type="text" id="phone" placeholder="Phone" oninput="updatePreview()">
-                </section>
-                <section class="step">
-                    <h4>Step 2: Summary</h4>
-                    <textarea id="summary" rows="3" placeholder="Professional Summary... (AI Tip: Highlight achievements)" oninput="updatePreview()"></textarea>
-                    <button onclick="aiSuggest()">AI Suggest (Rezi/Kickresume)</button>
-                </section>
-                <section id="sections">
-                    <h4>Step 3: Add Sections (Drag-Drop Like Novoresume)</h4>
-                    <button onclick="addSection('experience')">+ Experience</button>
-                    <button onclick="addSection('education')">+ Education</button>
-                    <button onclick="addSection('skills')">+ Skills</button>
-                </section>
-                <div class="tools">
-                    <button onclick="checkATS()">ATS Check (Teal Style)</button>
-                    <button onclick="exportPDF()">Download PDF (Free!)</button>
-                </div>
-            </aside>
+.header {
+    background: linear-gradient(135deg, var(--primary), #0056b3);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-            <article class="preview">
-                <div id="resumePreview" class="resume-preview professional">
-                    <h1 id="previewName">Your Name</h1>
-                    <h2 id="previewTitle">Your Job Title</h2>
-                    <p><strong>Email:</strong> <span id="previewEmail">your@email.com</span> | <strong>Phone:</strong> <span id="previewPhone">123-456-7890</span></p>
-                    <h2>Summary</h2>
-                    <p id="previewSummary">Write a compelling summary here...</p>
-                    <div id="previewSections"></div>
-                </div>
-            </article>
-        </main>
-    </div>
+.logo { font-size: 1.5rem; font-weight: 700; }
+nav a { color: white; margin-left: 1rem; text-decoration: none; }
+nav a:hover { text-decoration: underline; }
 
-    <footer class="footer">
-        <p>&copy; 2025 ResumeMaker Pro | Inspired by Top 10 Builders</p>
-    </footer>
+.hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--bg-light);
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+.hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.cta-btn {
+    background: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.cta-btn:hover { background: #0056b3; }
+
+.builder {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.sidebar {
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.step { margin-bottom: 1.5rem; }
+.step h4 { color: var(--primary); margin-bottom: 0.5rem; }
+
+input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background: #28A745;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+button:hover { background: #218838; }
+
+.template-selector { margin-bottom: 1rem; }
+
+.preview {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.resume-preview {
+    font-size: 14px;
+    line-height: 1.5;
+}
+.resume-preview h1 { 
+    color: var(--primary); 
+    font-size: 2rem; 
+    margin-bottom: 0.25rem; 
+}
+.resume-preview h2 { 
+    font-size: 1.2rem; 
+    margin: 1rem 0 0.5rem; 
+    border-bottom: 2px solid var(--primary); 
+    padding-bottom: 0.25rem; 
+}
+
+#app.hidden { display: none; }
+
+.footer { 
+    background: #333; 
+    color: white; 
+    text-align: center; 
+    padding: 1rem; 
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+    .builder { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.8rem; }
+}
