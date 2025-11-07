@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeMaker Pro - Top-Rated Builder 2025</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">ResumeMaker Pro</div>
+        <nav>
+            <a href="#templates">Templates</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#login">Login</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Build Your ATS-Friendly Resume in 5 Mins</h1>
+        <p>Inspired by top builders like Kickresume & Zety – Free to start!</p>
+        <button onclick="startBuilder()" class="cta-btn">Start Free</button>
+    </section>
+
+    <div id="app" class="hidden">
+        <main class="builder">
+            <aside class="sidebar">
+                <h3>Step-by-Step Editor (Like Resume Genius)</h3>
+                <div class="template-selector">
+                    <h4>Pick a Template</h4>
+                    <select id="templateSelect" onchange="switchTemplate()">
+                        <option value="professional">Professional (Zety Style)</option>
+                        <option value="modern">Modern (Kickresume Blue)</option>
+                        <option value="creative">Creative (Canva Drag-Drop)</option>
+                    </select>
+                </div>
+                <section class="step">
+                    <h4>Step 1: Personal Info</h4>
+                    <input type="text" id="name" placeholder="Full Name" oninput="updatePreview()">
+                    <input type="text" id="title" placeholder="Job Title" oninput="updatePreview()">
+                    <input type="text" id="email" placeholder="Email" oninput="updatePreview()">
+                    <input type="text" id="phone" placeholder="Phone" oninput="updatePreview()">
+                </section>
+                <section class="step">
+                    <h4>Step 2: Summary</h4>
+                    <textarea id="summary" rows="3" placeholder="Professional Summary... (AI Tip: Highlight achievements)" oninput="updatePreview()"></textarea>
+                    <button onclick="aiSuggest()">AI Suggest (Rezi/Kickresume)</button>
+                </section>
+                <section id="sections">
+                    <h4>Step 3: Add Sections (Drag-Drop Like Novoresume)</h4>
+                    <button onclick="addSection('experience')">+ Experience</button>
+                    <button onclick="addSection('education')">+ Education</button>
+                    <button onclick="addSection('skills')">+ Skills</button>
+                </section>
+                <div class="tools">
+                    <button onclick="checkATS()">ATS Check (Teal Style)</button>
+                    <button onclick="exportPDF()">Download PDF (Free!)</button>
+                </div>
+            </aside>
+
+            <article class="preview">
+                <div id="resumePreview" class="resume-preview professional">
+                    <h1 id="previewName">Your Name</h1>
+                    <h2 id="previewTitle">Your Job Title</h2>
+                    <p><strong>Email:</strong> <span id="previewEmail">your@email.com</span> | <strong>Phone:</strong> <span id="previewPhone">123-456-7890</span></p>
+                    <h2>Summary</h2>
+                    <p id="previewSummary">Write a compelling summary here...</p>
+                    <div id="previewSections"></div>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 ResumeMaker Pro | Inspired by Top 10 Builders</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
