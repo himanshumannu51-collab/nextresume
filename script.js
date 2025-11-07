@@ -1,128 +1,115 @@
-:root {
-    --primary: #007BFF;
-    --bg-light: #F8F9FA;
-    --border: #DEE2E6;
-    --text: #333333;
+let templates = {};
+
+// Load templates on start
+fetch('templates.json')
+    .then(res => res.json())
+    .then(data => {
+        templates = data;
+        switchTemplate(); // Apply default
+    })
+    .catch(() => console.warn('templates.json not found – using defaults'));
+
+function startBuilder() {
+    document.querySelector('.hero').style.display = 'none';
+    document.getElementById('app').classList.remove('hidden');
+    loadDraft(); // Auto-load if exists
 }
 
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    background: #FFFFFF;
-    color: var(--text);
-    line-height: 1.6;
+function updatePreview() {
+    document.getElementById('previewName').textContent = document.getElementById('name').value || 'Your Name';
+    document.getElementById('previewTitle').textContent = document.getElementById('title').value || 'Your Job Title';
+    document.getElementById('previewEmail').textContent = document.getElementById('email').value || 'your@email.com';
+    document.getElementById('previewPhone').textContent = document.getElementById('phone').value || '123-456-7890';
+    document.getElementById('previewSummary').textContent = document.getElementById('summary').value || 'Write a compelling summary here...';
 }
 
-.header {
-    background: linear-gradient(135deg, var(--primary), #0056b3);
-    color: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+function switchTemplate() {
+    const select = document.getElementById('templateSelect').value;
+    const tmpl = templates[select] || { colors: { primary: '#007BFF' } };
+    document.documentElement.style.setProperty('--primary', tmpl.colors.primary);
+    document.documentElement.style.setProperty('--bg-light', tmpl.colors.accent || '#F8F9FA');
 }
 
-.logo { font-size: 1.5rem; font-weight: 700; }
-nav a { color: white; margin-left: 1rem; text-decoration: none; }
-nav a:hover { text-decoration: underline; }
-
-.hero {
-    text-align: center;
-    padding: 3rem 1rem;
-    background: var(--bg-light);
+function addSection(type) {
+    const sectionsDiv = document.getElementById('previewSections');
+    const newSection = document.createElement('div');
+    newSection.innerHTML = `
+        <h2>${type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+        <textarea placeholder="Details for ${type}..." oninput="updatePreview()"></textarea>
+    `;
+    newSection.draggable = true;
+    newSection.className = 'section-item';
+    sectionsDiv.appendChild(newSection);
 }
 
-.hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-.cta-btn {
-    background: var(--primary);
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.cta-btn:hover { background: #0056b3; }
-
-.builder {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: auto;
+function aiSuggest() {
+    const summary = document.getElementById('summary');
+    summary.value = 'Results-driven professional with 5+ years in software development. Boosted team efficiency by 35% through agile practices and clean code. Expert in JavaScript, React, and Node.js.';
+    updatePreview();
+    alert('AI Suggestion Added! (Real OpenAI coming soon)');
 }
 
-.sidebar {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: 8px;
-    height: fit-content;
+function checkATS() {
+    alert('ATS Score: 88% – Add keywords: "React", "Node.js", "Agile" for 100%.');
 }
 
-.step { margin-bottom: 1.5rem; }
-.step h4 { color: var(--primary); margin-bottom: 0.5rem; }
-
-input, textarea, select {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    box-sizing: border-box;
+function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const content = document.getElementById('resumePreview').innerText;
+    const splitText = doc.splitTextToSize(content, 180);
+    doc.text(splitText, 15, 20);
+    doc.save('my-resume.pdf');
 }
 
-button {
-    background: #28A745;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-}
-button:hover { background: #218838; }
-
-.template-selector { margin-bottom: 1rem; }
-
-.preview {
-    border: 1px solid var(--border);
-    padding: 1.5rem;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+// Save & Load Draft
+function saveDraft() {
+    const data = {
+        name: document.getElementById('name').value,
+        title: document.getElementById('title').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        summary: document.getElementById('summary').value,
+        sections: Array.from(document.querySelectorAll('#previewSections textarea')).map(t => t.value)
+    };
+    localStorage.setItem('resumeDraft', JSON.stringify(data));
+    alert('Draft saved locally!');
 }
 
-.resume-preview {
-    font-size: 14px;
-    line-height: 1.5;
-}
-.resume-preview h1 { 
-    color: var(--primary); 
-    font-size: 2rem; 
-    margin-bottom: 0.25rem; 
-}
-.resume-preview h2 { 
-    font-size: 1.2rem; 
-    margin: 1rem 0 0.5rem; 
-    border-bottom: 2px solid var(--primary); 
-    padding-bottom: 0.25rem; 
+function loadDraft() {
+    const saved = localStorage.getItem('resumeDraft');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    document.getElementById('name').value = data.name || '';
+    document.getElementById('title').value = data.title || '';
+    document.getElementById('email').value = data.email || '';
+    document.getElementById('phone').value = data.phone || '';
+    document.getElementById('summary').value = data.summary || '';
+    updatePreview();
+
+    // Clear old sections
+    document.getElementById('previewSections').innerHTML = '';
+    data.sections?.forEach((text, i) => {
+        const type = ['experience', 'education', 'skills'][i] || 'custom';
+        addSection(type);
+        document.querySelectorAll('#previewSections textarea')[i].value = text;
+    });
 }
 
-#app.hidden { display: none; }
-
-.footer { 
-    background: #333; 
-    color: white; 
-    text-align: center; 
-    padding: 1rem; 
-    margin-top: 3rem;
-}
-
-@media (max-width: 768px) {
-    .builder { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 1.8rem; }
-}
+// Drag-drop (basic)
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+    e.preventDefault();
+    const dragged = document.querySelector('.section-item.dragging');
+    if (dragged) {
+        document.getElementById('previewSections').appendChild(dragged);
+    }
+});
+document.addEventListener('dragstart', e => {
+    if (e.target.classList.contains('section-item')) {
+        e.target.classList.add('dragging');
+    }
+});
+document.addEventListener('dragend', e => {
+    e.target.classList.remove('dragging');
+});
