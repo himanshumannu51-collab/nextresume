@@ -6,6 +6,8 @@
     <title>ResumeMaker Pro - Top-Rated Builder 2025</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF for real PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <header class="header">
@@ -54,8 +56,10 @@
                     <button onclick="addSection('skills')">+ Skills</button>
                 </section>
                 <div class="tools">
+                    <button onclick="saveDraft()">Save Draft</button>
+                    <button onclick="loadDraft()">Load Draft</button>
                     <button onclick="checkATS()">ATS Check (Teal Style)</button>
-                    <button onclick="exportPDF()">Download PDF (Free!)</button>
+                    <button onclick="exportPDF()">Download PDF</button>
                 </div>
             </aside>
 
@@ -73,7 +77,7 @@
     </div>
 
     <footer class="footer">
-        <p>&copy; 2025 ResumeMaker Pro | Inspired by Top 10 Builders</p>
+        <p>© 2025 ResumeMaker Pro | Inspired by Top 10 Builders</p>
     </footer>
 
     <script src="script.js"></script>
