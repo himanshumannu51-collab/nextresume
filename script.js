@@ -1,70 +1,128 @@
-function startBuilder() {
-    document.querySelector('.hero').style.display = 'none';
-    document.getElementById('app').classList.remove('hidden');
-    updatePreview(); // Initial load
+:root {
+    --primary: #007BFF;
+    --bg-light: #F8F9FA;
+    --border: #DEE2E6;
+    --text: #333333;
 }
 
-function updatePreview() {
-    document.getElementById('previewName').textContent = document.getElementById('name').value || 'Your Name';
-    document.getElementById('previewTitle').textContent = document.getElementById('title').value || 'Your Job Title';
-    document.getElementById('previewEmail').textContent = document.getElementById('email').value || 'your@email.com';
-    document.getElementById('previewPhone').textContent = document.getElementById('phone').value || '123-456-7890';
-    document.getElementById('previewSummary').textContent = document.getElementById('summary').value || 'Write a compelling summary here...';
-    // Update sections (from addSection)
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: #FFFFFF;
+    color: var(--text);
+    line-height: 1.6;
 }
 
-function switchTemplate() {
-    const select = document.getElementById('templateSelect');
-    const preview = document.getElementById('resumePreview');
-    preview.className = `resume-preview ${select.value}`;
-    // In full app, load CSS classes for each template
+.header {
+    background: linear-gradient(135deg, var(--primary), #0056b3);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-function addSection(type) {
-    const sectionsDiv = document.getElementById('previewSections');
-    const sidebarSections = document.getElementById('sections');
-    const newSection = document.createElement('div');
-    newSection.innerHTML = `
-        <h2>${type.charAt(0).toUpperCase() + type.slice(1)}</h2>
-        <textarea placeholder="Details for ${type}..." oninput="updatePreview()"></textarea>
-    `;
-    newSection.draggable = true; // Mock drag-drop like Novoresume/Canva
-    newSection.ondragstart = () => newSection.classList.add('dragging');
-    sectionsDiv.appendChild(newSection);
-    updatePreview(); // Refresh preview
+.logo { font-size: 1.5rem; font-weight: 700; }
+nav a { color: white; margin-left: 1rem; text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+
+.hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--bg-light);
 }
 
-function aiSuggest() {
-    // Mock AI like Kickresume/Rezi – In real: fetch OpenAI
-    const summary = document.getElementById('summary');
-    summary.value = 'Dynamic professional with 5+ years in tech, boosting efficiency by 30% via innovative solutions. Tailored for ATS success.';
-    updatePreview();
-    alert('AI Suggestion Added! (Inspired by top AI builders)');
+.hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.cta-btn {
+    background: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.cta-btn:hover { background: #0056b3; }
+
+.builder {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
 }
 
-function checkATS() {
-    // Mock ATS like Teal/Rezi
-    alert('ATS Check: 85% optimized! Add keywords like "agile" or "Python" for 100%.');
+.sidebar {
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: fit-content;
 }
 
-function exportPDF() {
-    // Use jsPDF in full version; mock here
-    const content = document.getElementById('resumePreview').innerText;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'resume.txt'; // Start with TXT; upgrade to PDF
-    a.click();
-    alert('Exported! (Free like Indeed)');
+.step { margin-bottom: 1.5rem; }
+.step h4 { color: var(--primary); margin-bottom: 0.5rem; }
+
+input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-// Drag-drop mock (Novoresume style)
-document.addEventListener('dragover', e => e.preventDefault());
-document.addEventListener('drop', e => {
-    e.preventDefault();
-    const dragged = document.querySelector('.dragging');
-    if (dragged) {
-        document.getElementById('previewSections').appendChild(dragged);
-    }
-});
+button {
+    background: #28A745;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+button:hover { background: #218838; }
+
+.template-selector { margin-bottom: 1rem; }
+
+.preview {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.resume-preview {
+    font-size: 14px;
+    line-height: 1.5;
+}
+.resume-preview h1 { 
+    color: var(--primary); 
+    font-size: 2rem; 
+    margin-bottom: 0.25rem; 
+}
+.resume-preview h2 { 
+    font-size: 1.2rem; 
+    margin: 1rem 0 0.5rem; 
+    border-bottom: 2px solid var(--primary); 
+    padding-bottom: 0.25rem; 
+}
+
+#app.hidden { display: none; }
+
+.footer { 
+    background: #333; 
+    color: white; 
+    text-align: center; 
+    padding: 1rem; 
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+    .builder { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.8rem; }
+}
