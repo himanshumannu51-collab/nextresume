@@ -1,0 +1,17 @@
+{
+  "professional": {
+    "description": "Zety-inspired: Clean, ATS-safe layout.",
+    "colors": { "primary": "#007BFF", "accent": "#DEE2E6" },
+    "fonts": "Inter"
+  },
+  "modern": {
+    "description": "Kickresume blue: Vibrant for tech roles.",
+    "colors": { "primary": "#0056b3", "accent": "#E3F2FD" },
+    "fonts": "Inter"
+  },
+  "creative": {
+    "description": "Canva drag-drop: Visual for designers.",
+    "colors": { "primary": "#FF6B6B", "accent": "#FFEAA7" },
+    "fonts": "Arial"
+  }
+}
