@@ -1,655 +1,88 @@
-import React, { useState } from 'react';
-import { Download, Plus, Trash2, FileText, Sparkles, Eye, Settings } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeMaker Pro - Build Your Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; background: #FFFFFF; color: #333333; }
+        .header { background: #007BFF; color: white; padding: 1rem; text-align: center; }
+        .builder { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; padding: 2rem; max-width: 1200px; margin: auto; }
+        .sidebar { background: #F8F9FA; padding: 1rem; border-radius: 8px; }
+        .preview { border: 1px solid #DEE2E6; padding: 1rem; border-radius: 8px; background: white; }
+        input, textarea { width: 100%; padding: 0.5rem; margin: 0.5rem 0; border: 1px solid #CED4DA; border-radius: 4px; }
+        button { background: #007BFF; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .resume-preview { font-size: 14px; line-height: 1.4; }
+        .resume-preview h1 { color: #007BFF; font-size: 28px; }
+        .resume-preview h2 { font-size: 18px; margin: 1rem 0 0.5rem; }
+        @media (max-width: 768px) { .builder { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>ResumeMaker Pro</h1>
+        <nav><a href="#" style="color: white; margin: 0 1rem;">Templates</a> | <a href="#" style="color: white;">Pricing</a> | <a href="#" style="color: white;">Login</a></nav>
+    </header>
 
-export default function ResumeMaker() {
-  const [activeTab, setActiveTab] = useState('content');
-  const [accentColor, setAccentColor] = useState('#2563eb');
-  
-  const [personalInfo, setPersonalInfo] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    location: '',
-    linkedin: '',
-    summary: ''
-  });
+    <main class="builder">
+        <aside class="sidebar">
+            <h3>Edit Your Resume</h3>
+            <section>
+                <h4>Personal Info</h4>
+                <input type="text" id="name" placeholder="Full Name" oninput="updatePreview()">
+                <input type="text" id="title" placeholder="Job Title" oninput="updatePreview()">
+                <input type="text" id="email" placeholder="Email" oninput="updatePreview()">
+                <input type="text" id="phone" placeholder="Phone" oninput="updatePreview()">
+            </section>
+            <section>
+                <h4>Summary</h4>
+                <textarea id="summary" rows="3" placeholder="Professional Summary..." oninput="updatePreview()"></textarea>
+            </section>
+            <button onclick="addSection('experience')">Add Experience</button>
+            <button onclick="exportPDF()">Download PDF</button>
+        </aside>
 
-  const [experience, setExperience] = useState([
-    { id: 1, company: '', position: '', location: '', startDate: '', endDate: '', current: false, bullets: [''] }
-  ]);
-
-  const [education, setEducation] = useState([
-    { id: 1, school: '', degree: '', field: '', location: '', gradDate: '', gpa: '' }
-  ]);
-
-  const [skills, setSkills] = useState({
-    technical: [],
-    soft: [],
-    languages: [],
-    certifications: []
-  });
-
-  const [skillInput, setSkillInput] = useState({ 
-    technical: '', 
-    soft: '', 
-    languages: '', 
-    certifications: '' 
-  });
-
-  const addExperience = () => {
-    setExperience([...experience, { 
-      id: Date.now(), 
-      company: '', 
-      position: '', 
-      location: '',
-      startDate: '', 
-      endDate: '', 
-      current: false,
-      bullets: ['']
-    }]);
-  };
-
-  const removeExperience = (id) => {
-    setExperience(experience.filter(exp => exp.id !== id));
-  };
-
-  const updateExperience = (id, field, value) => {
-    setExperience(experience.map(exp => 
-      exp.id === id ? { ...exp, [field]: value } : exp
-    ));
-  };
-
-  const addBullet = (expId) => {
-    setExperience(experience.map(exp => 
-      exp.id === expId ? { ...exp, bullets: [...exp.bullets, ''] } : exp
-    ));
-  };
-
-  const updateBullet = (expId, bulletIndex, value) => {
-    setExperience(experience.map(exp => 
-      exp.id === expId ? {
-        ...exp,
-        bullets: exp.bullets.map((b, i) => i === bulletIndex ? value : b)
-      } : exp
-    ));
-  };
-
-  const removeBullet = (expId, bulletIndex) => {
-    setExperience(experience.map(exp => 
-      exp.id === expId ? {
-        ...exp,
-        bullets: exp.bullets.filter((_, i) => i !== bulletIndex)
-      } : exp
-    ));
-  };
-
-  const addEducation = () => {
-    setEducation([...education, { 
-      id: Date.now(), 
-      school: '', 
-      degree: '', 
-      field: '', 
-      location: '',
-      gradDate: '',
-      gpa: ''
-    }]);
-  };
-
-  const removeEducation = (id) => {
-    setEducation(education.filter(edu => edu.id !== id));
-  };
-
-  const updateEducation = (id, field, value) => {
-    setEducation(education.map(edu => 
-      edu.id === id ? { ...edu, [field]: value } : edu
-    ));
-  };
-
-  const addSkill = (category) => {
-    if (skillInput[category].trim()) {
-      setSkills({
-        ...skills,
-        [category]: [...skills[category], skillInput[category].trim()]
-      });
-      setSkillInput({ ...skillInput, [category]: '' });
-    }
-  };
-
-  const removeSkill = (category, index) => {
-    setSkills({
-      ...skills,
-      [category]: skills[category].filter((_, i) => i !== index)
-    });
-  };
-
-  const downloadResume = () => {
-    const resumeContent = document.getElementById('resume-preview');
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>${personalInfo.fullName || 'Resume'}</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: Arial, sans-serif; margin: 0; padding: 40px; line-height: 1.5; color: #333; }
-            h1 { font-size: 32px; margin-bottom: 5px; color: ${accentColor}; font-weight: 700; }
-            .contact { color: #666; margin-bottom: 8px; font-size: 13px; }
-            .contact a { color: ${accentColor}; text-decoration: none; }
-            h2 { color: ${accentColor}; font-size: 18px; margin: 25px 0 12px 0; padding-bottom: 5px; border-bottom: 2px solid ${accentColor}; text-transform: uppercase; }
-            .item { margin-bottom: 18px; }
-            .job-title { font-weight: 700; font-size: 15px; }
-            .company { color: #555; font-size: 14px; }
-            .date { color: #777; font-size: 13px; font-style: italic; }
-            ul { margin: 8px 0 0 20px; }
-            li { margin-bottom: 4px; font-size: 14px; }
-            .skill-category { margin-bottom: 10px; }
-            .skill-title { font-weight: 600; margin-bottom: 5px; }
-            .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-            .skill-tag { background: #e5e7eb; padding: 4px 12px; border-radius: 4px; font-size: 13px; }
-          </style>
-        </head>
-        <body>
-          ${resumeContent.innerHTML}
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <FileText className="text-blue-600" size={32} />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Resume Builder Pro</h1>
-                <p className="text-sm text-gray-500">Create professional resumes in minutes</p>
-              </div>
+        <article class="preview">
+            <div id="resumePreview" class="resume-preview">
+                <h1 id="previewName">Your Name</h1>
+                <h2 id="previewTitle">Your Job Title</h2>
+                <p><strong>Email:</strong> <span id="previewEmail">your@email.com</span> | <strong>Phone:</strong> <span id="previewPhone">123-456-7890</span></p>
+                <h2>Summary</h2>
+                <p id="previewSummary">Write a compelling summary here...</p>
+                <div id="sections"></div> <!-- Dynamic sections -->
             </div>
-            <button
-              onClick={downloadResume}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-semibold shadow-md transition-all"
-            >
-              <Download size={20} /> Download
-            </button>
-          </div>
-        </div>
-      </div>
+        </article>
+    </main>
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 space-y-4">
-            <div className="bg-white rounded-xl shadow-sm p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Settings size={18} className="text-gray-600" />
-                <h3 className="font-semibold text-gray-900">Customize</h3>
-              </div>
-              
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Accent Color
-                </label>
-                <div className="flex gap-2">
-                  {['#2563eb', '#059669', '#7c3aed', '#dc2626', '#ea580c'].map(color => (
-                    <button
-                      key={color}
-                      onClick={() => setAccentColor(color)}
-                      className={`w-10 h-10 rounded-lg border-2 ${
-                        accentColor === color ? 'border-gray-900' : 'border-gray-200'
-                      }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+    <script>
+        function updatePreview() {
+            document.getElementById('previewName').textContent = document.getElementById('name').value || 'Your Name';
+            document.getElementById('previewTitle').textContent = document.getElementById('title').value || 'Your Job Title';
+            document.getElementById('previewEmail').textContent = document.getElementById('email').value || 'your@email.com';
+            document.getElementById('previewPhone').textContent = document.getElementById('phone').value || '123-456-7890';
+            document.getElementById('previewSummary').textContent = document.getElementById('summary').value || 'Write a compelling summary here...';
+        }
 
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-sm p-5 border border-blue-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={18} className="text-blue-600" />
-                <h3 className="font-semibold text-gray-900">Pro Tips</h3>
-              </div>
-              <ul className="text-sm text-gray-700 space-y-2">
-                <li>• Use action verbs to start bullets</li>
-                <li>• Quantify achievements with numbers</li>
-                <li>• Keep it to 1-2 pages maximum</li>
-                <li>• Tailor resume for each job</li>
-              </ul>
-            </div>
-          </div>
+        function addSection(type) {
+            const sectionsDiv = document.getElementById('sections');
+            const newSection = document.createElement('div');
+            newSection.innerHTML = `<h2>${type.charAt(0).toUpperCase() + type.slice(1)}</h2><p>Details here...</p>`;
+            sectionsDiv.appendChild(newSection);
+        }
 
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm">
-              <div className="border-b px-6 py-4">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setActiveTab('content')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      activeTab === 'content'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    Edit Content
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('preview')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                      activeTab === 'preview'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Eye size={16} /> Preview
-                  </button>
-                </div>
-              </div>
+        function exportPDF() {
+            // Mock: In real app, use jsPDF or pdfmake
+            alert('PDF exported! (Implement with jsPDF library)');
+            window.print(); // Fallback to print preview
+        }
 
-              <div className="p-6 max-h-[800px] overflow-y-auto">
-                {activeTab === 'content' && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          placeholder="Full Name"
-                          className="col-span-2 p-3 border border-gray-300 rounded-lg"
-                          value={personalInfo.fullName}
-                          onChange={(e) => setPersonalInfo({...personalInfo, fullName: e.target.value})}
-                        />
-                        <input
-                          type="email"
-                          placeholder="Email"
-                          className="p-3 border border-gray-300 rounded-lg"
-                          value={personalInfo.email}
-                          onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                        />
-                        <input
-                          type="tel"
-                          placeholder="Phone"
-                          className="p-3 border border-gray-300 rounded-lg"
-                          value={personalInfo.phone}
-                          onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Location"
-                          className="p-3 border border-gray-300 rounded-lg"
-                          value={personalInfo.location}
-                          onChange={(e) => setPersonalInfo({...personalInfo, location: e.target.value})}
-                        />
-                        <input
-                          type="text"
-                          placeholder="LinkedIn URL"
-                          className="p-3 border border-gray-300 rounded-lg"
-                          value={personalInfo.linkedin}
-                          onChange={(e) => setPersonalInfo({...personalInfo, linkedin: e.target.value})}
-                        />
-                        <textarea
-                          placeholder="Professional Summary"
-                          className="col-span-2 p-3 border border-gray-300 rounded-lg h-24"
-                          value={personalInfo.summary}
-                          onChange={(e) => setPersonalInfo({...personalInfo, summary: e.target.value})}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold">Work Experience</h2>
-                        <button
-                          onClick={addExperience}
-                          className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-                        >
-                          <Plus size={16} /> Add
-                        </button>
-                      </div>
-                      {experience.map((exp, expIndex) => (
-                        <div key={exp.id} className="border border-gray-200 rounded-lg p-4 mb-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <span className="text-sm font-medium text-gray-500">Position {expIndex + 1}</span>
-                            {experience.length > 1 && (
-                              <button
-                                onClick={() => removeExperience(exp.id)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
-                          </div>
-                          <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                              <input
-                                type="text"
-                                placeholder="Job Title"
-                                className="p-2 border border-gray-300 rounded-lg text-sm"
-                                value={exp.position}
-                                onChange={(e) => updateExperience(exp.id, 'position', e.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Company"
-                                className="p-2 border border-gray-300 rounded-lg text-sm"
-                                value={exp.company}
-                                onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
-                              />
-                            </div>
-                            <div className="grid grid-cols-3 gap-3">
-                              <input
-                                type="text"
-                                placeholder="Location"
-                                className="p-2 border border-gray-300 rounded-lg text-sm"
-                                value={exp.location}
-                                onChange={(e) => updateExperience(exp.id, 'location', e.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Start"
-                                className="p-2 border border-gray-300 rounded-lg text-sm"
-                                value={exp.startDate}
-                                onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="End"
-                                className="p-2 border border-gray-300 rounded-lg text-sm"
-                                value={exp.endDate}
-                                disabled={exp.current}
-                                onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
-                              />
-                            </div>
-                            <label className="flex items-center gap-2 text-sm">
-                              <input
-                                type="checkbox"
-                                checked={exp.current}
-                                onChange={(e) => {
-                                  updateExperience(exp.id, 'current', e.target.checked);
-                                  if (e.target.checked) updateExperience(exp.id, 'endDate', 'Present');
-                                }}
-                              />
-                              Currently working here
-                            </label>
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700">Achievements</label>
-                              {exp.bullets.map((bullet, bulletIndex) => (
-                                <div key={bulletIndex} className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Describe achievement"
-                                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm"
-                                    value={bullet}
-                                    onChange={(e) => updateBullet(exp.id, bulletIndex, e.target.value)}
-                                  />
-                                  {exp.bullets.length > 1 && (
-                                    <button
-                                      onClick={() => removeBullet(exp.id, bulletIndex)}
-                                      className="text-red-600 hover:text-red-700"
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
-                                  )}
-                                </div>
-                              ))}
-                              <button
-                                onClick={() => addBullet(exp.id)}
-                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                              >
-                                + Add bullet
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold">Education</h2>
-                        <button
-                          onClick={addEducation}
-                          className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-                        >
-                          <Plus size={16} /> Add
-                        </button>
-                      </div>
-                      {education.map((edu, eduIndex) => (
-                        <div key={edu.id} className="border border-gray-200 rounded-lg p-4 mb-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <span className="text-sm font-medium text-gray-500">Education {eduIndex + 1}</span>
-                            {education.length > 1 && (
-                              <button
-                                onClick={() => removeEducation(edu.id)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <input
-                              type="text"
-                              placeholder="School"
-                              className="col-span-2 p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.school}
-                              onChange={(e) => updateEducation(edu.id, 'school', e.target.value)}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Degree"
-                              className="p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.degree}
-                              onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Field"
-                              className="p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.field}
-                              onChange={(e) => updateEducation(edu.id, 'field', e.target.value)}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Location"
-                              className="p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.location}
-                              onChange={(e) => updateEducation(edu.id, 'location', e.target.value)}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Grad Date"
-                              className="p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.gradDate}
-                              onChange={(e) => updateEducation(edu.id, 'gradDate', e.target.value)}
-                            />
-                            <input
-                              type="text"
-                              placeholder="GPA"
-                              className="col-span-2 p-2 border border-gray-300 rounded-lg text-sm"
-                              value={edu.gpa}
-                              onChange={(e) => updateEducation(edu.id, 'gpa', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div>
-                      <h2 className="text-lg font-semibold mb-4">Skills</h2>
-                      <div className="space-y-4">
-                        {Object.entries({
-                          technical: 'Technical Skills',
-                          soft: 'Soft Skills',
-                          languages: 'Languages',
-                          certifications: 'Certifications'
-                        }).map(([key, label]) => (
-                          <div key={key} className="border border-gray-200 rounded-lg p-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-                            <div className="flex gap-2 mb-2">
-                              <input
-                                type="text"
-                                placeholder={`Add ${label.toLowerCase()}`}
-                                className="flex-1 p-2 border border-gray-300 rounded-lg text-sm"
-                                value={skillInput[key]}
-                                onChange={(e) => setSkillInput({ ...skillInput, [key]: e.target.value })}
-                                onKeyPress={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    addSkill(key);
-                                  }
-                                }}
-                              />
-                              <button
-                                onClick={() => addSkill(key)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-                              >
-                                Add
-                              </button>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {skills[key].map((skill, idx) => (
-                                <span
-                                  key={idx}
-                                  className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-sm"
-                                >
-                                  {skill}
-                                  <button
-                                    onClick={() => removeSkill(key, idx)}
-                                    className="text-gray-500 hover:text-red-600"
-                                  >
-                                    ×
-                                  </button>
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'preview' && (
-                  <div className="bg-white rounded-lg border border-gray-200 p-8" id="resume-preview">
-                    {personalInfo.fullName && (
-                      <div className="mb-6">
-                        <h1 className="text-4xl font-bold mb-2" style={{ color: accentColor }}>
-                          {personalInfo.fullName}
-                        </h1>
-                        <div className="text-gray-600 text-sm flex flex-wrap gap-2">
-                          {personalInfo.email && <span>{personalInfo.email}</span>}
-                          {personalInfo.email && personalInfo.phone && <span>•</span>}
-                          {personalInfo.phone && <span>{personalInfo.phone}</span>}
-                          {(personalInfo.email || personalInfo.phone) && personalInfo.location && <span>•</span>}
-                          {personalInfo.location && <span>{personalInfo.location}</span>}
-                          {personalInfo.linkedin && (
-                            <>
-                              <span>•</span>
-                              <a href={personalInfo.linkedin} style={{ color: accentColor }}>LinkedIn</a>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {personalInfo.summary && (
-                      <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4" style={{ borderLeftColor: accentColor }}>
-                        <p className="text-gray-700 leading-relaxed">{personalInfo.summary}</p>
-                      </div>
-                    )}
-
-                    {experience.some(exp => exp.company || exp.position) && (
-                      <div className="mb-6">
-                        <h2 className="text-xl font-semibold mb-4 pb-2 border-b-2" style={{ color: accentColor, borderBottomColor: accentColor }}>
-                          WORK EXPERIENCE
-                        </h2>
-                        {experience.map((exp) => (
-                          (exp.company || exp.position) && (
-                            <div key={exp.id} className="mb-5">
-                              <div className="flex justify-between items-baseline mb-1">
-                                <div>
-                                  <div className="font-bold text-base">{exp.position}</div>
-                                  <div className="text-gray-700">{exp.company}{exp.location && `, ${exp.location}`}</div>
-                                </div>
-                                {(exp.startDate || exp.endDate) && (
-                                  <div className="text-gray-600 text-sm italic">
-                                    {exp.startDate} {exp.startDate && (exp.endDate || exp.current) && '–'} {exp.current ? 'Present' : exp.endDate}
-                                  </div>
-                                )}
-                              </div>
-                              {exp.bullets.some(b => b) && (
-                                <ul className="list-disc ml-5 mt-2 space-y-1">
-                                  {exp.bullets.filter(b => b).map((bullet, idx) => (
-                                    <li key={idx} className="text-gray-700 text-sm leading-relaxed">{bullet}</li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    )}
-
-                    {education.some(edu => edu.school || edu.degree) && (
-                      <div className="mb-6">
-                        <h2 className="text-xl font-semibold mb-4 pb-2 border-b-2" style={{ color: accentColor, borderBottomColor: accentColor }}>
-                          EDUCATION
-                        </h2>
-                        {education.map((edu) => (
-                          (edu.school || edu.degree) && (
-                            <div key={edu.id} className="mb-3">
-                              <div className="flex justify-between items-baseline">
-                                <div>
-                                  <div className="font-bold">
-                                    {edu.degree}{edu.degree && edu.field && ' in '}{edu.field}
-                                  </div>
-                                  <div className="text-gray-700">{edu.school}{edu.location && `, ${edu.location}`}</div>
-                                  {edu.gpa && <div className="text-gray-600 text-sm">GPA: {edu.gpa}</div>}
-                                </div>
-                                {edu.gradDate && <div className="text-gray-600 text-sm italic">{edu.gradDate}</div>}
-                              </div>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    )}
-
-                    {Object.values(skills).some(arr => arr.length > 0) && (
-                      <div className="mb-6">
-                        <h2 className="text-xl font-semibold mb-4 pb-2 border-b-2" style={{ color: accentColor, borderBottomColor: accentColor }}>
-                          SKILLS
-                        </h2>
-                        {Object.entries({
-                          technical: 'Technical Skills',
-                          soft: 'Soft Skills',
-                          languages: 'Languages',
-                          certifications: 'Certifications'
-                        }).map(([key, label]) => (
-                          skills[key].length > 0 && (
-                            <div key={key} className="mb-3">
-                              <div className="font-semibold text-sm mb-2">{label}</div>
-                              <div className="flex flex-wrap gap-2">
-                                {skills[key].map((skill, idx) => (
-                                  <span key={idx} className="bg-gray-200 px-3 py-1 rounded text-sm">
-                                    {skill}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+        // AI Suggestion Mock (replace with real API call)
+        document.querySelector('button[onclick="addSection(\'experience\')"]').insertAdjacentHTML('beforebegin', '<button onclick="aiSuggest()">AI Suggest Content</button>');
+        function aiSuggest() {
+            alert('AI Suggestion: "Led team of 5 in developing app, increasing efficiency by 30%." (Integrate OpenAI here)');
+        }
+    </script>
+</body>
+</html>
